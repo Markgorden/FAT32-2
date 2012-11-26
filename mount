@@ -1,0 +1,1 @@
+mount -o loop fat32.img ~/fat32
