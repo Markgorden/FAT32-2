@@ -54,7 +54,10 @@ int main(int argc, char *argv[])
 				else if (strcmp(operation, "rmdir")==0)
 					rmdir();*/
 				else if (strcmp(operation, "exit")==0)
+				{
+					fclose(f);
 					break;
+				}
 				else
 					printf("Argument not correct\n");
 				
