@@ -1,7 +1,7 @@
 #include <stdint.h>
 
-#ifndef _A_H
-#define _A_H 1
+#ifndef B
+#define B 1
 struct BS_BPB
 {
 	uint8_t jmpBoot[3];
@@ -34,6 +34,8 @@ struct BS_BPB
 } __attribute__((packed));
 #endif
 
+#ifndef D
+#define D 1
 struct DIR
 {
 	uint8_t Name[11];
@@ -49,3 +51,18 @@ struct DIR
 	uint16_t FstClusLO;
 	uint32_t FileSize;
 } __attribute__((packed));
+#endif
+
+#ifndef F
+#define F 1
+struct FSI
+{
+	uint32_t LeadSig;
+	uint8_t Reserved1[480];
+	uint32_t StrucSig;
+	uint32_t Free_Count;
+	uint32_t Nxt_free;
+	uint8_t Reserved2[12];
+	uint32_t TrailSig;
+} __attribute__((packed));
+#endif

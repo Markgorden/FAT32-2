@@ -1,24 +1,47 @@
 #include "structs.h"
 
+#define EMPTY_ENTRY 0xE5
+#define LAST_ENTRY 0x00
+
+extern FILE *f;
+extern struct DIR direntry;
 extern struct BS_BPB BS_BPB;
 
 int ls()
 {
+	int i;
+	long offset;
+	char name[12];
+	
+	offset=(32+1009*2)*512;
+	
 	while (1)
-	{
-		Offset=(32+1009*2)*512;
-		while (Offset < (32+1009*2)*512+512*1)
+	{		
+		if (offset < (32+1009*2)*512+512*1)
 		{
-			read_32_bytes(direntry)
-			if (direntry.name[0] == LAST_ENTRY)
+			//read_32_bytes(direntry)
+			
+			fseek(f, offset, SEEK_SET);
+			fread(&direntry, sizeof(struct DIR), 1, f);
+			
+			if (direntry.Name[0] == LAST_ENTRY)
 				break;
-			else if (direntry.name[0] == EMPTY_ENTRY)
-				continue
-			name = append(direntry.name, '\0')
-			print(name)
-			C = FAT(C)
-			if (C >= EOC)
-				break;
+			else if (direntry.Name[0] == EMPTY_ENTRY)
+			{
+				offset+=32;
+				continue;
+			}
+			//name = append(direntry.name, '\0')
+			for (i=0; i<11; i++)
+			{
+				name[i]=direntry.Name[i];
+			}
+			name[11]='\0';
+			//print(name)
+			printf("%s\n",name);
+			offset+=32;
+			//printf("%ld\n", offset);
 		}
+	}
 	return 0;
 }

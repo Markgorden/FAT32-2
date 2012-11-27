@@ -5,23 +5,26 @@
 
 char *image_name;
 char *working_directory;
+FILE *f;
 struct BS_BPB BS_BPB;
+struct FSI FSInfo;
+struct DIR direntry;
 
 int main(int argc, char *argv[])
 {
 	
 	char operation[6];
-	FILE *f;
+	
 	if (argc == 2)
 	{
 		if (f = fopen(argv[1], "r"))
 		{
-			fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
-			fclose(f);
+			//fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
 			image_name=argv[1];
 			working_directory=(char*)malloc(200*sizeof(char));
 			working_directory[0]='/';
 			working_directory[1]=0;
+			
 			while(1)
 			{
 				printf("%s:%s>", image_name, working_directory);
