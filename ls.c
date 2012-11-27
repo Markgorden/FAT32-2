@@ -2,6 +2,7 @@
 
 #define EMPTY_ENTRY 0xE5
 #define LAST_ENTRY 0x00
+#define ATTR_LONG_NAME 0x0F
 
 extern FILE *f;
 extern struct DIR direntry;
@@ -32,15 +33,19 @@ int ls()
 				continue;
 			}
 			//name = append(direntry.name, '\0')
-			for (i=0; i<11; i++)
+			if (direntry.Attr!=ATTR_LONG_NAME)
 			{
-				name[i]=direntry.Name[i];
+				for (i=0; i<11; i++)
+				{
+					name[i]=direntry.Name[i];
+				}
+				name[11]='\0';
+				//print(name)
+				printf("%s\n",name);
+				
+				//printf("%ld\n", offset);
 			}
-			name[11]='\0';
-			//print(name)
-			printf("%s\n",name);
 			offset+=32;
-			//printf("%ld\n", offset);
 		}
 	}
 	return 0;
