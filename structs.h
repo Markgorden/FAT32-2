@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+#define EOC 0x0FFFFFF8
+
 #ifndef B
 #define B 1
 struct BS_BPB

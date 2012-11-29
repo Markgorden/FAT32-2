@@ -5,6 +5,10 @@
 
 char *image_name;
 char *working_directory;
+uint32_t current_cluster;
+char *parent_directory;
+uint32_t parent_cluster;
+
 FILE *f;
 struct BS_BPB BS_BPB;
 struct FSI FSInfo;
@@ -12,18 +16,25 @@ struct DIR direntry;
 
 int main(int argc, char *argv[])
 {
-	
+	int i;
+	char name[13];
 	char operation[6];
+	working_directory=(char*)malloc(200*sizeof(char));
+	parent_directory=(char*)malloc(200*sizeof(char));
 	
 	if (argc == 2)
 	{
 		if (f = fopen(argv[1], "r"))
 		{
-			//fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
+			fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
 			image_name=argv[1];
-			working_directory=(char*)malloc(200*sizeof(char));
+			
 			working_directory[0]='/';
-			working_directory[1]=0;
+			working_directory[1]='\0';
+			current_cluster=BS_BPB.RootClus;
+			
+			parent_directory[0]='\0';
+			parent_cluster=-1;
 			
 			while(1)
 			{
@@ -33,9 +44,13 @@ int main(int argc, char *argv[])
 					info();
 				else if (strcmp(operation, "ls")==0)
 					ls();
-				/*else if (strcmp(operation, "cd")==0)
-					cd();
-				else if (strcmp(operation, "touch")==0)
+				else if (strcmp(operation, "cd")==0)
+				{
+					scanf("%s", name);
+					getchar();
+					cd(name);
+				}
+				/*else if (strcmp(operation, "touch")==0)
 					touch();
 				else if (strcmp(operation, "size")==0)
 					size();

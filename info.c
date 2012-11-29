@@ -7,9 +7,9 @@ extern FILE *f;
 int info()
 {
 	long offset;
-	offset=0;
-	fseek(f, offset, SEEK_SET);
-	fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
+	//offset=0;
+	//fseek(f, offset, SEEK_SET);
+	//fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
 	offset=BS_BPB.FSInfo*BS_BPB.BytsPerSec;
 	fseek(f, offset, SEEK_SET);
 	fread(&FSInfo, sizeof(struct FSI), 1, f);
