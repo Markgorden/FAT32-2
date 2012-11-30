@@ -11,8 +11,8 @@ uint32_t parent_cluster;
 
 FILE *f;
 struct BS_BPB BS_BPB;
-struct FSI FSInfo;
-struct DIR direntry;
+//struct FSI FSInfo;
+//struct DIR direntry;
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	
 	if (argc == 2)
 	{
-		if (f = fopen(argv[1], "r"))
+		if (f = fopen(argv[1], "rb+"))
 		{
 			fread(&BS_BPB, sizeof(struct BS_BPB), 1, f);
 			image_name=argv[1];
@@ -50,9 +50,13 @@ int main(int argc, char *argv[])
 					getchar();
 					cd(name);
 				}
-				/*else if (strcmp(operation, "touch")==0)
-					touch();
-				else if (strcmp(operation, "size")==0)
+				else if (strcmp(operation, "touch")==0)
+				{
+					scanf("%s", name);
+					getchar();
+					touch(name);
+				}
+				/*else if (strcmp(operation, "size")==0)
 					size();
 				else if (strcmp(operation, "fopen")==0)
 					fopen();

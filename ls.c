@@ -7,7 +7,7 @@
 
 extern uint32_t current_cluster;
 extern FILE *f;
-extern struct DIR direntry;
+//extern struct DIR direntry;
 extern struct BS_BPB BS_BPB;
 extern char *work_directory;
 
@@ -17,6 +17,7 @@ int ls()
 	long Offset;
 	uint32_t C;
 	char name[9], ext[4];
+	struct DIR direntry;
 	C=current_cluster;
 	
 	while (1)

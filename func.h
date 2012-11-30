@@ -1,6 +1,7 @@
 #include "structs.h"
 
 extern struct BS_BPB BS_BPB;
+extern struct FSI FSInfo;
 extern FILE *f;
 
 #define EMPTY_ENTRY 0xE5
@@ -50,6 +51,73 @@ int equal(uint8_t name1[], uint8_t name2[])
 }
 #endif
 
+#ifndef CVOC
+#define CVOC 1
+void ChangeValueOfCluster(uint32_t value, uint32_t cluster)
+{
+	long offset;
+	offset=BS_BPB.RsvdSecCnt*BS_BPB.BytsPerSec + cluster*4;
+	fseek(f, offset, SEEK_SET);
+	fwrite(&value, sizeof(uint32_t), 1, f);
+	fflush(f);
+}
+#endif
+
+#ifndef FEOF
+#define FEOF 1
+long FindEmptyentryOfCluster(uint32_t cluster)
+{
+	int i;
+	uint32_t next_cluster;
+	long Offset;
+	struct FSI FSInfo;
+	struct DIR direntry;
+	while (1)
+	{
+		Offset=GetOffsetOfSector(FirstSectorOfCluster(cluster));
+		fseek(f, Offset, SEEK_SET);
+		while (Offset < GetOffsetOfSector(FirstSectorOfCluster(cluster))+BS_BPB.BytsPerSec*BS_BPB.SecPerClus)
+		{
+			fread(&direntry, sizeof(struct DIR), 1, f);
+			//printf("0x%lx\n", Offset);
+			if ((direntry.Name[0] == EMPTY_ENTRY) || (direntry.Name[0] == LAST_ENTRY))
+				return Offset;
+			Offset+=32;
+		}
+
+		if (FAT(cluster)>=EOC)
+		{
+			fseek(f, BS_BPB.FSInfo*BS_BPB.BytsPerSec, SEEK_SET);
+			fread(&FSInfo, sizeof(struct FSI), 1, f);
+			
+			if (FSInfo.Nxt_free==0xFFFFFFFF)
+				next_cluster=0x00000002;
+			else
+				next_cluster=FSInfo.Nxt_free+1;
+			for ( ; ; next_cluster++)
+			{
+				if (FAT(next_cluster)==0x00000000)
+				{
+					ChangeValueOfCluster(next_cluster, cluster);
+					ChangeValueOfCluster(EOC, next_cluster);
+					FSInfo.Nxt_free=cluster;
+					fseek(f, BS_BPB.FSInfo*BS_BPB.BytsPerSec, SEEK_SET);
+					fwrite(&FSInfo, sizeof(struct FSI), 1, f);
+					fflush(f);
+					break;
+				}
+				if (next_cluster==0xFFFFFFFF)
+					next_cluster=0x00000001;
+			}
+			cluster=next_cluster;
+		}
+		else
+			cluster=FAT(cluster);
+	}
+		
+}
+#endif
+
 #ifndef FDOF
 #define FDOF 1
 struct DIR FindDirentryOfFile(uint32_t cluster, char *name)
@@ -65,11 +133,11 @@ struct DIR FindDirentryOfFile(uint32_t cluster, char *name)
 		while (Offset < GetOffsetOfSector(FirstSectorOfCluster(cluster))+BS_BPB.BytsPerSec*BS_BPB.SecPerClus)
 		{
 			fread(&direntry, sizeof(struct DIR), 1, f);
-			Offset+=32;
+			//printf("0x%lx\n", Offset);
 			if (direntry.Name[0] == EMPTY_ENTRY)
 				continue;
 			else if (direntry.Name[0] == LAST_ENTRY)
-				break;
+				return direntry;
 			else if (direntry.Name[0] == 0x05)
 				direntry.Name[0] = 0xE5;
 			if (direntry.Attr!=ATTR_LONG_NAME)
@@ -81,13 +149,14 @@ struct DIR FindDirentryOfFile(uint32_t cluster, char *name)
 				if (strcmp(file_name, name)==0)
 					return direntry;
 			}
+			Offset+=32;
 		}
 		cluster=FAT(cluster);
 		if (cluster>=EOC)
 			break;
 	}
-	direntry.Name[0]=LAST_ENTRY;
-	return direntry;
+	//direntry.Name[0]=LAST_ENTRY;
+	//return direntry;
 }
 #endif
 

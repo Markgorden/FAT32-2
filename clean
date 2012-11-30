@@ -1,1 +1,2 @@
 rm *~
+cp ~/下载/fat32.img fat32.img

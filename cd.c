@@ -3,16 +3,6 @@
 extern char *working_directory;
 extern uint32_t current_cluster;
 
-char *StringToBytes(char *name)
-{
-	int i;
-	for (i=0; name[i]!='\0'; i++)
-	{
-		if (name[i]<='z' && name[i]>= 'a')
-			name[i]-=32;
-	}
-}
-
 int cd(char *name)
 {
 	int i,j;
