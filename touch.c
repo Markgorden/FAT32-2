@@ -13,7 +13,7 @@ int touch (char *name)
 	char file_name[12];
 	struct DIR empty_entry, direntry;
 	struct FSI FSInfo;
-	//empty_entry=(struct DIR *)malloc(sizeof(struct DIR));
+	
 	for (i=0; name[i]!='\0'; i++)
 	{
 		if (name[i]>= 'a' && name[i]<='z')

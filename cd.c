@@ -29,7 +29,7 @@ int cd(char *name)
 	}
 	else if (strcmp(name, ".")==0)
 	{
-
+		//?? If you do "cd ." in the root directory, what should happen?
 	}
 	else if (strcmp(name, "..")==0)
 	{

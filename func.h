@@ -55,11 +55,34 @@ int equal(uint8_t name1[], uint8_t name2[])
 #define CVOC 1
 void ChangeValueOfCluster(uint32_t value, uint32_t cluster)
 {
-	long offset;
-	offset=BS_BPB.RsvdSecCnt*BS_BPB.BytsPerSec + cluster*4;
-	fseek(f, offset, SEEK_SET);
+	long Offset;
+	Offset=BS_BPB.RsvdSecCnt*BS_BPB.BytsPerSec + cluster*4;
+	fseek(f, Offset, SEEK_SET);
 	fwrite(&value, sizeof(uint32_t), 1, f);
 	fflush(f);
+}
+#endif
+
+#ifndef EVOC
+#define EVOC 1
+void EmptyValueOfCluster(uint32_t cluster)
+{
+	int i;
+	uint8_t *empty;
+	uint32_t value=0;
+	long Offset;
+	
+	empty=(uint8_t *)malloc(sizeof(uint8_t)*BS_BPB.BytsPerSec*BS_BPB.SecPerClus);
+	for (i=0; i<BS_BPB.BytsPerSec*BS_BPB.SecPerClus; i++)
+		empty[i]=0;
+	
+	Offset=BS_BPB.RsvdSecCnt*BS_BPB.BytsPerSec + cluster*4;
+	if (FAT(cluster)>=0x00000002 && FAT(cluster)<=0x0FFFFFEF)
+		EmptyValueOfCluster(FAT(cluster));		//recursively empty all the cluster linked
+	fseek(f, GetOffsetOfSector(FirstSectorOfCluster(cluster)), SEEK_SET);
+	fwrite(empty, BS_BPB.BytsPerSec*BS_BPB.SecPerClus, 1, f);
+	fseek(f, Offset, SEEK_SET);
+	fwrite(&value, sizeof(uint32_t), 1, f);
 }
 #endif
 
@@ -157,6 +180,40 @@ struct DIR FindDirentryOfFile(uint32_t cluster, char *name)
 	}
 	//direntry.Name[0]=LAST_ENTRY;
 	//return direntry;
+}
+#endif
+
+#ifndef GOOE
+#define GOOE 1
+long GetOffsetOfEntry(uint32_t cluster, char *name)	//call this after FDOF, to make sure that there is an entry named "name"
+{
+	int i;
+	char file_name[12];
+	long Offset;
+	struct DIR direntry;
+	while (1)
+	{
+		Offset=GetOffsetOfSector(FirstSectorOfCluster(cluster));
+		fseek(f, Offset, SEEK_SET);
+		while (Offset < GetOffsetOfSector(FirstSectorOfCluster(cluster))+BS_BPB.BytsPerSec*BS_BPB.SecPerClus)
+		{
+			fread(&direntry, sizeof(struct DIR), 1, f);
+			if (direntry.Name[0] == 0x05)
+				direntry.Name[0] = 0xE5;
+			if (direntry.Attr!=ATTR_LONG_NAME)
+			{
+				for (i=0; i<11; i++)
+					file_name[i]=direntry.Name[i];
+				file_name[11]='\0';
+				if (strcmp(file_name, name)==0)
+					return Offset;
+			}
+			Offset+=32;
+		}
+		cluster=FAT(cluster);
+		if (cluster>=EOC)
+			break;
+	}
 }
 #endif
 

@@ -65,12 +65,20 @@ int main(int argc, char *argv[])
 				else if (strcmp(operation, "fread")==0)
 					fread();
 				else if (strcmp(operation, "fwrite")==0)
-					fwrite();
+					fwrite();*/
 				else if (strcmp(operation, "rm")==0)
-					rm();
+				{
+					scanf("%s", name);
+					getchar();
+					rm(name);
+				}
 				else if (strcmp(operation, "mkdir")==0)
-					mkdir();
-				else if (strcmp(operation, "rmdir")==0)
+				{
+					scanf("%s", name);
+					getchar();
+					mkdir(name);
+				}
+				/*else if (strcmp(operation, "rmdir")==0)
 					rmdir();*/
 				else if (strcmp(operation, "exit")==0)
 				{
