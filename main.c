@@ -78,8 +78,12 @@ int main(int argc, char *argv[])
 					getchar();
 					mkdir(name);
 				}
-				/*else if (strcmp(operation, "rmdir")==0)
-					rmdir();*/
+				else if (strcmp(operation, "rmdir")==0)
+				{
+					scanf("%s", name);
+					getchar();
+					rmdir(name);
+				}
 				else if (strcmp(operation, "exit")==0)
 				{
 					fclose(f);
