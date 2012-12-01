@@ -3,6 +3,8 @@
 
 extern char *working_directory;
 extern uint32_t current_cluster;
+extern int number_opened_file;
+extern long opened_file[100];
 extern FILE *f;
 
 int rm (char *name)
@@ -54,15 +56,20 @@ int rm (char *name)
 		empty[i]='\0';
 	
 	direntry=FindDirentryOfFile(current_cluster, file_name);
-	if (direntry.Name[0]!=LAST_ENTRY)				//haven't check for whether it is opened, will be added
+	if (direntry.Name[0]!=LAST_ENTRY)
 	{
 		if (direntry.Attr==0x20)
 		{
 			Offset=GetOffsetOfEntry(current_cluster, file_name);
-			next_cluster=(direntry.FstClusHI << 16 | direntry.FstClusLO);
-			EmptyValueOfCluster(next_cluster);
-			fseek(f, Offset, SEEK_SET);
-			fwrite(&empty, 32, 1, f);
+			if (NotOpened(Offset))			//check whether it is opened
+			{
+				next_cluster=(direntry.FstClusHI << 16 | direntry.FstClusLO);
+				EmptyValueOfCluster(next_cluster);
+				fseek(f, Offset, SEEK_SET);
+				fwrite(&empty, 32, 1, f);
+			}
+			else
+				printf("Error! It is opened.\n");
 		}
 		else
 			printf("Error! It's not a file.\n");

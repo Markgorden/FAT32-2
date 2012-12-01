@@ -2,6 +2,8 @@
 
 extern struct BS_BPB BS_BPB;
 extern struct FSI FSInfo;
+extern int number_opened_file;
+extern long opened_file[100];
 extern FILE *f;
 
 #define EMPTY_ENTRY 0xE5
@@ -182,6 +184,21 @@ struct DIR FindDirentryOfFile(uint32_t cluster, char *name)
 	//return direntry;
 }
 #endif
+
+#ifndef NO
+#define NO 1
+int NotOpened(long Offset)
+{
+	int i;
+	for (i=0; i<number_opened_file; i++)
+	{
+		if (opened_file[i]==Offset)
+			return 0;
+	}
+	return 1;
+}
+#endif
+
 
 #ifndef GOOE
 #define GOOE 1
