@@ -10,6 +10,10 @@ char *parent_directory;
 uint32_t parent_cluster;
 int number_opened_file;
 long opened_file[100];
+int number_read_opened;
+int number_write_opened;
+long opened_read_file[100];
+long opened_write_file[100];
 
 FILE *f;
 struct BS_BPB BS_BPB;
@@ -19,14 +23,20 @@ struct BS_BPB BS_BPB;
 int main(int argc, char *argv[])
 {
 	int i;
+	char mode[1];
 	char name[13];
 	char operation[6];
 	working_directory=(char*)malloc(200*sizeof(char));
 	parent_directory=(char*)malloc(200*sizeof(char));
 	
 	number_opened_file=0;
-	for (i=0; i<100; i++)
+	number_read_file= 0;
+	number_write_file= 0;
+	for (i=0; i<100; i++){
 		opened_file[i]=0;
+		opened_read_file[i] = 0;
+		opened_write_file[i] = 0;
+	}
 	
 	if (argc == 2)
 	{
@@ -67,8 +77,9 @@ int main(int argc, char *argv[])
 				else if (strcmp(operation, "fopen")==0)
 				{
 					scanf("%s", name);
+					scanf("%s", mode);
 					getchar();
-					openfile(name);
+					openfile(name, mode);
 				}
 				else if (strcmp(operation, "fclose")==0)
 				{

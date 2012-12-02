@@ -6,10 +6,11 @@ extern long opened_file[100];
 
 void closefile(char *name)
 {
-	int i, j;
+	int i, j, thismode = 0;
 	long Offset;
 	char file_name[12];
 	struct DIR direntry;
+	
 	
 	for (i=0; name[i]!='\0'; i++)
 	{
@@ -56,16 +57,35 @@ void closefile(char *name)
 				printf("Error! It's not opened.\n");
 			else
 			{
-				for (i=0; i<number_opened_file; i++)
-				{
-					if (opened_file[i]==Offset);
+				for (i=0; i<number_opened_file; i++){
+					if (opened_file[i]==Offset)
 						break;
-				}
-				
+				}	
 				for (j=i; j<number_opened_file-1; j++)
 					opened_file[j]=opened_file[j+1];
 				opened_file[j]=0;
 				number_opened_file--;
+
+				for(i=0; i < number_read_file; i++){
+					if (opened_read_file[i] == Offset){
+						break; 
+					}
+				}
+				for (j=i; j<number_read_file-1; j++)
+                                        opened_read_file[j]=opened_read_file[j+1];
+                                opened_read_file[j]=0;
+                                number_read_file--;
+
+				for(i=0; i < number_write_file; i++){
+                                        if (opened_write_file[i] == Offset){
+                                                break;
+                                        }
+                                }
+                                for (j=i; j<number_write_file-1; j++)
+                                        opened_write_file[j]=opened_write_file[j+1];
+                                opened_write_file[j]=;
+                                number_write_file--;
+
 			}
 		}
 		else

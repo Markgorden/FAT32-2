@@ -2,9 +2,13 @@
 #include "func.h"
 
 extern int number_opened_file;
+extern int number_read_file;
+extern int number_write_file;
 extern long opened_file[100];
+extern long opened_read_file[100];
+extern long opened_write_file[100];
 
-void openfile(char *name)
+void openfile(char *name, char *mode)
 {
 	int i, j;
 	long Offset;
@@ -56,7 +60,26 @@ void openfile(char *name)
 			{
 				opened_file[number_opened_file]=Offset;
 				number_opened_file++;
+				if(mode == "r"){
+					opened_read_file[number_read_file] = Offset;
+					number_read_file++;
+					printf("File opened for reading.\n");
+				{
+				else if(mode == "w"){
+					opened_write_file[number_write_file] = Offset;
+					number_write_file++;
+					printf("File opened for writing.\n");
+				}
+				else if(mode == "x"){
+					opened_write_file[number_write_file] = Offset;
+                                        number_write_file++;
+					opened_read_file[number_read_file] = Offset;
+                                        number_read_file++;
+                                        printf("File opened for reading and writing.\n");
+				}
+					printf("Error! Invalid mode entered.\n");
 			}
+
 			else
 				printf("Error! It's already opened.\n");
 		}
